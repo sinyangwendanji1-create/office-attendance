@@ -8,6 +8,20 @@ app.use(express.static('.'));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
+app.post('/api/register', async (req, res) => {
+  const { name, student_number } = req.body;
+
+  const { error } = await supabase
+    .from('students')
+    .insert([{ name: name, student_number: student_number }]);
+
+  if (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+
+  return res.json({ success: true, message: `Successfully registered ${name}` });
+});
+
 app.post('/api/attendance', async (req, res) => {
   const { name, student_number, action, task_done } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;

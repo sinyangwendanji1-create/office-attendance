@@ -8,21 +8,35 @@ async function handleAction(actionType) {
     return;
   }
 
+  let endpoint = '/api/attendance';
+  let payload = {
+    name: name,
+    student_number: studentNumber,
+    action: actionType,
+    task_done: taskDone
+  };
+
+  if (actionType === 'register') {
+    if (!name.trim()) {
+      alert("Please enter your name to register.");
+      return;
+    }
+    endpoint = '/api/register';
+    payload = { name: name, student_number: studentNumber };
+  }
+
   try {
-    const response = await fetch('/api/attendance', {
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        student_number: studentNumber,
-        action: actionType,
-        task_done: taskDone
-      })
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
     alert(result.message);
-    loadLogs();
+    if (actionType !== 'register') {
+      loadLogs();
+    }
   } catch (err) {
     alert("Error: " + err.message);
   }
