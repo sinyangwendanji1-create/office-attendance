@@ -1,69 +1,47 @@
-async function registerStudent() {
-  const nameInput = document.getElementById('studentName').value.trim();
-  const passwordInput = document.getElementById('sinPassword').value.trim();
+async function handleAttendance(type) {
+  const studentId = document.getElementById('studentIdInput').value;
+  const taskDone = document.getElementById('taskInput').value;
 
-  if (!nameInput || !passwordInput) {
-    alert('Please enter both your Name and Student Number to register.');
+  if (!studentId.trim()) {
+    alert("Please enter your Student ID.");
     return;
   }
 
-  try {
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: nameInput, sin: passwordInput })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert(data.message);
-    } else {
-      alert(data.error || 'Registration failed.');
-    }
-  } catch (err) {
-    alert('Failed to connect to the server.');
-  }
-}
-
-async function submitAttendance(action) {
-  const nameInput = document.getElementById('studentName').value.trim();
-  const passwordInput = document.getElementById('sinPassword').value.trim();
-
-  if (!nameInput || !passwordInput) {
-    alert('Please enter both your Student Name and Student Number.');
+  if (!taskDone.trim()) {
+    alert("Please enter the task completed today.");
     return;
   }
 
-  try {
-    const response = await fetch('/api/record', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: nameInput, sin: passwordInput, action: action })
-    });
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
 
-    const data = await response.json();
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
 
-    if (response.ok) {
-      alert(data.message);
-      if (data.history) {
-        updateHistoryLog(data.history);
+      try {
+        const response = await fetch('/api/attendance', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            student_id: studentId,
+            type: type,
+            lat: latitude,
+            lng: longitude,
+            task_done: taskDone
+          })
+        });
+
+        const result = await response.json();
+        alert(result.message);
+      } catch (err) {
+        alert("Failed to record attendance: " + err.message);
       }
-    } else {
-      alert(data.error || 'An error occurred.');
+    },
+    (error) => {
+      alert("Error fetching GPS location: " + error.message);
     }
-  } catch (err) {
-    alert('Failed to connect to the server.');
-  }
-}
-
-function updateHistoryLog(history) {
-  const logList = document.getElementById('historyLog');
-  if (!logList) return;
-  logList.innerHTML = '';
-  history.slice().reverse().forEach(entry => {
-    const li = document.createElement('li');
-    li.textContent = `${entry.time} - ${entry.name}: ${entry.action}`;
-    logList.appendChild(li);
-  });
+  );
 }
