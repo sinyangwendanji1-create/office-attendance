@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Office Attendance</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #registerBtn { background-color: #0066cc; }
+    #checkInBtn { background-color: #28a745; }
+    #checkOutBtn { background-color: #dc3545; }
+    button:hover { opacity: 0.9; }
+    .activity-log {
+      margin-top: 25px;
+    }
+    .activity-log h3 {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Office Attendance</h2>
+    
+    <div class="form-group">
+      <label for="name">Student Name</label>
+      <input type="text" id="name" placeholder="e.g. John Doe">
+    </div>
+
+    <div class="form-group">
+      <label for="sin">Student Number (SIN)</label>
+      <input type="text" id="sin" placeholder="e.g. 9876543210">
+    </div>
+
+    <div class="btn-group">
+      <button id="registerBtn" onclick="registerStudent()">Register</button>
+      <button id="checkInBtn" onclick="recordAction('Check In')">Check In</button>
+      <button id="checkOutBtn" onclick="recordAction('Check Out')">Check Out</button>
+    </div>
+
+    <div class="activity-log">
+      <h3>Activity Log</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Action</th>
+            <th>Time</th>
+            <th>IP Address</th>
+          </tr>
+        </thead>
+        <tbody id="logTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    async function registerStudent() {
+      const name = document.getElementById('name').value;
+      const sin = document.getElementById('sin').value;
+
+      if (!name || !sin) {
+        alert('Please fill in both fields.');
+        return;
+      }
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, sin })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+      } else {
+        alert(result.error);
+      }
+    }
+
+    function getPosition() {
+      return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+          reject(new Error('Geolocation is not supported by your browser.'));
+        } else {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          });
+        }
+      });
+    }
+
+    async function recordAction(action) {
+      const name = document.getElementById('name').value;
+      const sin = document.getElementById('sin').value;
+
+      if (!name || !sin) {
+        alert('Please fill in both fields.');
+        return;
+      }
+
+      try {
+        const position = await getPosition();
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        const response = await fetch('/api/record', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, sin, action, latitude, longitude })
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert(result.message);
+          updateTable(result.history);
+        } else {
+          alert(result.error);
+        }
+      } catch (err) {
+        alert('Location access failed: ' + err.message + '. Please allow location access to check in.');
+      }
+    }
+
+    function updateTable(history) {
+      const tbody = document.getElementById('logTableBody');
+      tbody.innerHTML = '';
+      history.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.action}</td>
+          <td>${item.time}</td>
+          <td>${item.ip_address || ''}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+  </script>
+</body>
+</html>
