@@ -41,8 +41,12 @@ app.post('/api/attendance', async (req, res) => {
 
   const officeLat = -15.48778418675252;
   const officeLng = 28.347654584254244;
-  const distance = calculateHaversineDistance(lat, lng, officeLat, officeLng);
-  const locationStatus = distance <= 100 ? `Verified (${Math.round(distance)}m from office)` : `Remote (${Math.round(distance)}m away)`;
+
+  let locationStatus = 'Location not shared';
+  if (lat !== null && lng !== null && lat !== undefined && lng !== undefined) {
+    const distance = calculateHaversineDistance(lat, lng, officeLat, officeLng);
+    locationStatus = distance <= 100 ? `Verified (${Math.round(distance)}m from office)` : `Remote (${Math.round(distance)}m away)`;
+  }
 
   const { error } = await supabase
     .from('attendance')
