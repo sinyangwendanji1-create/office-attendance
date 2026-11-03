@@ -39,8 +39,8 @@ app.post('/api/attendance', async (req, res) => {
   const { name, student_number, action, task_done, lat, lng } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  const officeLat = -15.48778418675252;
-  const officeLng = 28.347654584254244;
+  const officeLat = -15.487824469906103;
+  const officeLng = 28.347891399028423;
 
   let locationStatus = 'Location not shared';
   if (lat !== null && lng !== null && lat !== undefined && lng !== undefined) {
