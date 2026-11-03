@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Office Attendance System</title>
+  <title>Office Attendance</title>
   <style>
     * {
       box-sizing: border-box;
@@ -25,7 +25,7 @@
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       width: 100%;
-      max-width: 480px;
+      max-width: 600px;
     }
     h2 {
       color: #333333;
@@ -33,7 +33,7 @@
       text-align: center;
     }
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 15px;
     }
     label {
       display: block;
@@ -49,7 +49,6 @@
       border-radius: 6px;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.2s;
     }
     input[type="text"]:focus, textarea:focus {
       border-color: #007bff;
@@ -57,7 +56,7 @@
     .btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     button {
       flex: 1;
@@ -67,75 +66,80 @@
       font-weight: 600;
       cursor: pointer;
       font-size: 14px;
-      transition: background 0.2s;
     }
-    .btn-checkin {
-      background-color: #007bff;
-      color: #ffffff;
+    .btn-register { background-color: #007bff; color: #ffffff; }
+    .btn-checkin { background-color: #28a745; color: #ffffff; }
+    .btn-checkout { background-color: #dc3545; color: #ffffff; }
+    .btn-print { width: 100%; background-color: #17a2b8; color: #ffffff; margin-top: 10px; }
+    
+    h3 {
+      margin-top: 25px;
+      margin-bottom: 10px;
+      color: #333;
     }
-    .btn-checkin:hover {
-      background-color: #0056b3;
-    }
-    .btn-checkout {
-      background-color: #6c757d;
-      color: #ffffff;
-    }
-    .btn-checkout:hover {
-      background-color: #545b62;
-    }
-    .btn-print {
+    table {
       width: 100%;
-      background-color: #28a745;
-      color: #ffffff;
+      border-collapse: collapse;
       margin-top: 10px;
     }
-    .btn-print:hover {
-      background-color: #218838;
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background-color: #f8f9fa;
     }
     @media print {
-      body {
-        background: #ffffff;
-        display: block;
-      }
-      .card {
-        box-shadow: none;
-        max-width: 100%;
-        padding: 0;
-      }
-      button, input, textarea, label {
-        display: none !important;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      th, td {
-        border: 1px solid #000000;
-        padding: 8px;
-        text-align: left;
-      }
+      body { background: #ffffff; display: block; }
+      .card { box-shadow: none; max-width: 100%; padding: 0; }
+      button, input, textarea, label, .form-group { display: none !important; }
+      h2, h3 { display: block !important; }
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>Office Attendance System</h2>
+    <h2>Office Attendance</h2>
     
     <div class="form-group">
-      <label for="studentIdInput">Student ID:</label>
-      <input type="text" id="studentIdInput" placeholder="Enter ID" required>
+      <label for="studentName">Student Name</label>
+      <input type="text" id="studentName" placeholder="Enter Full Name">
     </div>
 
     <div class="form-group">
-      <label for="taskInput">Task Completed Today:</label>
-      <textarea id="taskInput" placeholder="Describe the tasks completed..." rows="3" required></textarea>
+      <label for="studentNumber">Student Number (SIN)</label>
+      <input type="text" id="studentNumber" placeholder="Enter SIN">
+    </div>
+
+    <div class="form-group">
+      <label for="taskInput">Task Completed Today</label>
+      <textarea id="taskInput" placeholder="Describe today's tasks..." rows="2"></textarea>
     </div>
 
     <div class="btn-group">
-      <button class="btn-checkin" onclick="handleAttendance('check-in')">Check In</button>
-      <button class="btn-checkout" onclick="handleAttendance('check-out')">Check Out</button>
+      <button class="btn-register" onclick="handleAction('register')">Register</button>
+      <button class="btn-checkin" onclick="handleAction('check-in')">Check In</button>
+      <button class="btn-checkout" onclick="handleAction('check-out')">Check Out</button>
     </div>
+    
     <button class="btn-print" onclick="window.print()">🖨️ Print Attendance Report</button>
+
+    <h3>Activity Log</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Action</th>
+          <th>Time</th>
+          <th>Task</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+      <tbody id="logTableBody">
+      </tbody>
+    </table>
   </div>
 
   <script src="script.js"></script>

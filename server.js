@@ -8,38 +8,19 @@ app.use(express.static('.'));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371e3;
-  const φ1 = lat1 * Math.PI / 180;
-  const φ2 = lat2 * Math.PI / 180;
-  const Δφ = (lat2 - lat1) * Math.PI / 180;
-  const Δλ = (lon2 - lon1) * Math.PI / 180;
-
-  const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-            
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
-
 app.post('/api/attendance', async (req, res) => {
-  const { student_id, type, lat, lng, task_done } = req.body;
+  const { name, student_number, action, task_done } = req.body;
+  const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  const officeLat = -15.48778418675252;
-  const officeLng = 28.347654584254244;
-  const distance = calculateHaversineDistance(lat, lng, officeLat, officeLng);
-
-  const locationStatus = distance <= 100 ? 'On-site' : `Remote (${Math.round(distance)}m away)`;
-
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('attendance')
     .insert([
       {
-        student_id: student_id,
-        action_type: type,
-        location_status: locationStatus,
+        name: name,
+        student_number: student_number,
+        action: action,
         task_done: task_done,
+        ip_address: ipAddress,
         created_at: new Date()
       }
     ]);
@@ -48,7 +29,18 @@ app.post('/api/attendance', async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 
-  return res.json({ success: true, message: `Successfully logged ${type} (${locationStatus})` });
+  return res.json({ success: true, message: `Successfully logged ${action} for ${name}` });
+});
+
+app.get('/api/logs', async (req, res) => {
+  const { data, error } = await supabase
+    .from('attendance')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(20);
+
+  if (error) return res.status(500).json([]);
+  res.json(data);
 });
 
 const PORT = process.env.PORT || 3000;
