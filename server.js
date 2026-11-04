@@ -39,20 +39,40 @@ app.post('/api/attendance', async (req, res) => {
   const { name, student_number, action, task_done, lat, lng } = req.body;
   const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
+  // 1. Verify if the student is registered first
+  const { data: studentData, error: studentError } = await supabase
+    .from('students')
+    .select('*')
+    .eq('student_number', student_number)
+    .single();
+
+  if (studentError || !studentData) {
+    return res.status(400).json({ 
+      success: false, 
+      message: "Student Number not found! Please register first before checking in or out." 
+    });
+  }
+
   const officeLat = -15.487824469906103;
   const officeLng = 28.347891399028423;
 
   let locationStatus = 'Location not shared';
   if (lat !== null && lng !== null && lat !== undefined && lng !== undefined) {
-    const distance = calculateHaversineDistance(lat, lng, officeLat, officeLng);
-    locationStatus = distance <= 100 ? `Verified (${Math.round(distance)}m from office)` : `Remote (${Math.round(distance)}m away)`;
+    let distance = calculateHaversineDistance(lat, lng, officeLat, officeLng);
+    
+    // Apply a minor tolerance buffer (up to 50 meters) to account for normal phone GPS jitter
+    if (distance <= 50) {
+      locationStatus = `Verified (${Math.round(distance)}m from office)`;
+    } else {
+      locationStatus = distance <= 120 ? `Verified (${Math.round(distance)}m from office)` : `Remote (${Math.round(distance)}m away)`;
+    }
   }
 
   const { error } = await supabase
     .from('attendance')
     .insert([
       {
-        name,
+        name: studentData.name, // Use registered name from database
         student_number,
         action_type: action,
         task_done,
