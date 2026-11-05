@@ -1,147 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Office Attendance</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background-color: #f4f7f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .card {
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-      width: 100%;
-      max-width: 650px;
-    }
-    h2 {
-      color: #333333;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .form-group {
-      margin-bottom: 15px;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #444444;
-      font-size: 14px;
-    }
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #cccccc;
-      border-radius: 6px;
-      font-size: 14px;
-      outline: none;
-    }
-    input[type="text"]:focus, textarea:focus {
-      border-color: #007bff;
-    }
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-    button {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .btn-register { background-color: #007bff; color: #ffffff; }
-    .btn-checkin { background-color: #28a745; color: #ffffff; }
-    .btn-checkout { background-color: #dc3545; color: #ffffff; }
-    .btn-print { width: 100%; background-color: #17a2b8; color: #ffffff; margin-top: 10px; }
-    h3 {
-      margin-top: 25px;
-      margin-bottom: 10px;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-      font-size: 12px;
-    }
-    th {
-      background-color: #f8f9fa;
-    }
-    @media print {
-      body { background: #ffffff; display: block; }
-      .card { box-shadow: none; max-width: 100%; padding: 0; }
-      button, input, textarea, label, .form-group { display: none !important; }
-      h2, h3 { display: block !important; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZRDC Attendance System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="card">
-    <h2>Office Attendance</h2>
-    
-    <div class="form-group">
-      <label for="studentName">Student Name</label>
-      <input type="text" id="studentName" placeholder="Enter Full Name">
+    <div id="authView" class="view-container">
+        <div class="card">
+            <h2>ZRDC Portal Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="emailInput">Email:</label>
+                    <input type="email" id="emailInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="passwordInput">Password:</label>
+                    <input type="password" id="passwordInput" required>
+                </div>
+                <button type="submit" class="primary-btn">Login</button>
+            </form>
+            <p id="authMessage" class="error-msg"></p>
+        </div>
     </div>
 
-    <div class="form-group">
-      <label for="studentNumber">Student Number (SIN)</label>
-      <input type="text" id="studentNumber" placeholder="Enter SIN">
+    <div id="appView" class="view-container hidden">
+        <nav class="navbar">
+            <h2>ZRDC Attendance System</h2>
+            <div class="menu-tabs">
+                <button class="tab-btn active" data-target="attendanceTab">Attendance Portal</button>
+                <button class="tab-btn" data-target="reportsTab">Reports & Export</button>
+                <button id="logoutBtn" class="danger-btn">Logout</button>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <div id="attendanceTab" class="tab-content">
+                <div class="card">
+                    <h3>Check-In / Check-Out</h3>
+                    <div class="form-group">
+                        <label>Full Name:</label>
+                        <input type="text" id="nameInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label>SIN Number:</label>
+                        <input type="text" id="sinInput" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Task Done Summary:</label>
+                        <textarea id="taskSummaryInput" rows="3" placeholder="Summarize your tasks..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Digital Signature:</label>
+                        <canvas id="signatureCanvas" width="400" height="150" style="border: 1px solid #ccc;"></canvas>
+                        <br>
+                        <button type="button" id="clearSigBtn">Clear Signature</button>
+                    </div>
+                    <div class="button-row">
+                        <button id="checkInBtn" class="primary-btn">Check In</button>
+                        <button id="checkOutBtn" class="primary-btn">Check Out</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Activity Log</h3>
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>In Time</th>
+                                <th>Out Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="reportsTab" class="tab-content hidden">
+                <div class="card">
+                    <h3>Reports & Document Export</h3>
+                    <p>Print or download your attendance records in various formats.</p>
+                    <div class="button-row">
+                        <button id="printBtn" class="secondary-btn">Print Report</button>
+                        <button id="exportPdfBtn" class="secondary-btn">Download PDF</button>
+                        <button id="exportWordBtn" class="secondary-btn">Download Word (.docx)</button>
+                        <button id="exportExcelBtn" class="secondary-btn">Download Excel (.xlsx)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-      <label for="taskInput">Task Completed Today</label>
-      <textarea id="taskInput" placeholder="Describe today's tasks..." rows="2"></textarea>
-    </div>
-
-    <div class="btn-group">
-      <button class="btn-register" onclick="handleAction('register')">Register</button>
-      <button class="btn-checkin" onclick="handleAction('check-in')">Check In</button>
-      <button class="btn-checkout" onclick="handleAction('check-out')">Check Out</button>
-    </div>
-    
-    <button class="btn-print" onclick="window.print()">🖨️ Print Attendance Report</button>
-
-    <h3>Activity Log</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Action</th>
-          <th>Time</th>
-          <th>Task</th>
-          <th>Location</th>
-          <th>IP</th>
-        </tr>
-      </thead>
-      <tbody id="logTableBody">
-      </tbody>
-    </table>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
