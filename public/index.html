@@ -1,21 +1,78 @@
-<!-- Registration Form Section -->
-<div id="register-container" style="display: none;">
-  <h2>Create an Account</h2>
-  <form id="register-form">
-    <input type="email" id="reg-email" placeholder="Email Address" required />
-    <input type="password" id="reg-password" placeholder="Password" required />
-    <button type="submit">Sign Up</button>
-  </form>
-  <p>Already have an account? <a href="#" id="show-login">Log In</a></p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Office Attendance System</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+</head>
+<body>
 
-<!-- Login Form Section -->
-<div id="login-container">
-  <h2>Sign In</h2>
-  <form id="login-form">
-    <input type="email" id="login-email" placeholder="Email Address" required />
-    <input type="password" id="login-password" placeholder="Password" required />
-    <button type="submit">Log In</button>
-  </form>
-  <p>Need an account? <a href="#" id="show-register">Register</a></p>
-</div>
+  <div id="auth-container" class="card">
+    <div id="login-container">
+      <h2>Sign In</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email Address" required />
+        <input type="password" id="login-password" placeholder="Password" required />
+        <button type="submit">Log In</button>
+      </form>
+      <p>Need an account? <a href="#" id="show-register">Register</a></p>
+    </div>
+
+    <div id="register-container" style="display: none;">
+      <h2>Create an Account</h2>
+      <form id="register-form">
+        <input type="email" id="reg-email" placeholder="Email Address" required />
+        <input type="password" id="reg-password" placeholder="Password" required />
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="#" id="show-login">Log In</a></p>
+    </div>
+  </div>
+
+  <div id="app-container" style="display: none;">
+    <header>
+      <h1>Enterprise Office Attendance System</h1>
+      <button id="logout-btn">Log Out</button>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Quad-Lock Check-In</h2>
+        <form id="checkin-form">
+          <input type="text" id="sin-number" placeholder="SIN Number" required />
+          <input type="text" id="user-name" placeholder="Full Name" required />
+          <input type="text" id="office-pin" placeholder="Daily Office Access PIN" required />
+          <input type="text" id="office-token" placeholder="Scanned/Entered QR Token" required />
+          <button type="button" id="scan-qr-btn">Scan QR Code</button>
+          <div id="qr-reader" style="width: 100%; display: none;"></div>
+          <button type="submit">Check In</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Check Out</h2>
+        <form id="checkout-form">
+          <input type="text" id="checkout-sin" placeholder="SIN Number" required />
+          <textarea id="task-summary" placeholder="Task Summary of the Day" required></textarea>
+          <label>Digital Signature:</label>
+          <canvas id="signature-pad" width="400" height="200" style="border: 1px solid #ccc;"></canvas>
+          <button type="button" id="clear-signature">Clear Signature</button>
+          <button type="submit">Check Out</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Attendance Logs</h2>
+        <button id="fetch-logs-btn">Refresh Logs</button>
+        <ul id="logs-list"></ul>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
