@@ -235,3 +235,31 @@ async function loadLogs(token) {
         console.log(err);
     }
 }
+document.getElementById('show-register').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('register-container').style.display = 'block';
+});
+
+document.getElementById('show-login').addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('register-container').style.display = 'none';
+  document.getElementById('login-container').style.display = 'block';
+});
+
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  });
+
+  if (error) {
+    alert('Registration Error: ' + error.message);
+  } else {
+    alert('Registration successful! Please check your email for the confirmation link.');
+  }
+});

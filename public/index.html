@@ -1,114 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Office Attendance System</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="authView" class="view-container">
-        <div class="card">
-            <h2>Portal Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="emailInput">Email:</label>
-                    <input type="email" id="emailInput" required>
-                </div>
-                <div class="form-group">
-                    <label for="passwordInput">Password:</label>
-                    <input type="password" id="passwordInput" required>
-                </div>
-                <button type="submit" class="primary-btn">Login</button>
-            </form>
-            <p id="authMessage" class="error-msg"></p>
-        </div>
-    </div>
+<!-- Registration Form Section -->
+<div id="register-container" style="display: none;">
+  <h2>Create an Account</h2>
+  <form id="register-form">
+    <input type="email" id="reg-email" placeholder="Email Address" required />
+    <input type="password" id="reg-password" placeholder="Password" required />
+    <button type="submit">Sign Up</button>
+  </form>
+  <p>Already have an account? <a href="#" id="show-login">Log In</a></p>
+</div>
 
-    <div id="appView" class="view-container hidden" style="display: flex; flex-direction: column; align-items: stretch;">
-        <nav class="navbar">
-            <h2>Office Attendance System</h2>
-            <div class="menu-tabs">
-                <button class="tab-btn active" data-target="attendanceTab">Attendance Portal</button>
-                <button class="tab-btn" data-target="reportsTab">Supervisor Hub & Logs</button>
-                <button id="logoutBtn" class="danger-btn">Logout</button>
-            </div>
-        </nav>
-
-        <div class="main-content">
-            <div id="attendanceTab" class="tab-content">
-                <div class="card" style="max-width: 600px;">
-                    <h3>Daily Check-In & Check-Out</h3>
-                    <div class="form-group">
-                        <label>Full Name:</label>
-                        <input type="text" id="nameInput" required>
-                    </div>
-                    <div class="form-group">
-                        <label>SIN Number:</label>
-                        <input type="text" id="sinInput" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Office Access PIN:</label>
-                        <input type="password" id="officePinInput" value="ZRDC-OFFICE-2026" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Office QR Token (Scan or Type):</label>
-                        <div style="display: flex; gap: 8px;">
-                            <input type="text" id="officeTokenInput" value="ZRDC-SECURE-2026" style="flex: 1;" required>
-                            <button type="button" id="scanQrBtn" class="secondary-btn" style="width: auto; padding: 0 12px;">📷 Scan QR</button>
-                        </div>
-                    </div>
-                    <div id="qrReaderContainer" class="hidden" style="margin-bottom: 15px;">
-                        <div id="reader" style="width: 100%;"></div>
-                        <button type="button" id="closeScannerBtn" class="danger-btn" style="margin-top: 8px; width: 100%;">Close Scanner</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Task Done Summary (Required for Check-Out):</label>
-                        <textarea id="taskSummaryInput" rows="3" placeholder="Summarize your tasks before checking out..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Digital Signature (Required for Check-Out):</label>
-                        <canvas id="signatureCanvas" width="400" height="130" style="border: 1px solid #ccc; border-radius: 4px; background: #fafafa;"></canvas>
-                        <br>
-                        <button type="button" id="clearSigBtn" class="danger-btn" style="margin-top: 6px; padding: 4px 10px; font-size: 13px;">Clear Signature</button>
-                    </div>
-                    <div class="button-row">
-                        <button id="checkInBtn" class="primary-btn">Check In (Quad-Lock Verify)</button>
-                        <button id="checkOutBtn" class="secondary-btn" style="margin-top: 10px;">Check Out</button>
-                    </div>
-                    <p id="portalMessage" style="margin-top: 15px; font-weight: bold; text-align: center;"></p>
-                </div>
-            </div>
-
-            <div id="reportsTab" class="tab-content hidden">
-                <div class="card" style="max-width: 100%;">
-                    <h3>Supervisor Activity Log & Export Hub</h3>
-                    <div class="button-row" style="margin-bottom: 20px;">
-                        <button id="printBtn" class="primary-btn">Print Report</button>
-                        <button id="exportPdfBtn" class="secondary-btn">Download PDF</button>
-                        <button id="exportExcelBtn" class="primary-btn">Download Excel</button>
-                    </div>
-                    <table class="log-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>SIN</th>
-                                <th>Status</th>
-                                <th>In Time</th>
-                                <th>Out Time</th>
-                                <th>Task Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <script type="module" src="script.js"></script>
-</body>
-</html>
+<!-- Login Form Section -->
+<div id="login-container">
+  <h2>Sign In</h2>
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email Address" required />
+    <input type="password" id="login-password" placeholder="Password" required />
+    <button type="submit">Log In</button>
+  </form>
+  <p>Need an account? <a href="#" id="show-register">Register</a></p>
+</div>
